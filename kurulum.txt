@@ -1,0 +1,89 @@
+============================================================
+           JARVIS MARK XXXIX - KURULUM REHBERİ
+============================================================
+
+Jarvis sistemini sorunsuz bir şekilde çalıştırmak için
+aşağıdaki adımları sırasıyla uygulayın.
+
+
+1. GEREKSİNİMLERİN YÜKLENMESİ
+------------------------------------------------------------
+Terminali (veya komut istemini) projenin bulunduğu klasörde
+açın ve şu komutu çalıştırın:
+
+    pip install -r requirements.txt
+
+NOT: Playwright tarayıcıları da gereklidir:
+
+    playwright install
+
+
+2. CLOUDFLARED KURULUMU (Uzaktan Erişim İçin)
+------------------------------------------------------------
+Jarvis'e ev dışından erişmek için Cloudflare Tunnel kullanılır.
+Yüklü değilse şu komutla kurun:
+
+    winget install --id Cloudflare.cloudflared
+
+
+3. NTFY UYGULAMASI (Telefona Bildirim İçin)
+------------------------------------------------------------
+Telefonunuza "ntfy" uygulamasını indirin:
+  - Android: Google Play'de "ntfy" aratın
+  - iOS:     App Store'da "ntfy" aratın
+
+Uygulamayı açtıktan sonra bir kanal adı (topic) seçin.
+Örneğin: "benim-jarvis-kanalim"
+
+Bu kanal adını aklınızda tutun — kurulumda sorulacak.
+
+
+4. PROGRAMI BAŞLATMA
+------------------------------------------------------------
+Jarvis iki parçadan oluşur:
+
+A) MASAÜSTÜ SESLİ ASİSTAN (main.py):
+   ----------------------------------------
+   python main.py
+
+   İLK AÇILIŞTA:
+   Masaüstünde bir kurulum ekranı çıkar. Şunları girin:
+     - Gemini API Anahtarı (Google AI Studio'dan ücretsiz alınır)
+     - ntfy Kanal Adı (3. adımda seçtiğiniz isim)
+     - İşletim Sistemi (Windows / macOS / Linux)
+
+   Bu bilgiler sadece bir kere sorulur.
+   Sonraki açılışlarda tekrar sorulmaz.
+
+B) UZAKTAN KONTROL PANELİ (remote.py):
+   ----------------------------------------
+   python remote.py
+
+   Bu komut çalıştırıldığında:
+   - Yerel sunucu başlar (http://127.0.0.1:8765)
+   - Cloudflare tüneli otomatik açılır
+     (Örn: https://xxxx.trycloudflare.com)
+   - ntfy üzerinden telefonunuza giriş linki ve
+     şifre gönderilir
+
+   NOT: remote.py'yi çalıştırmadan önce masaüstü
+   asistanı (main.py) ile en az bir kere kurulum
+   yapmış olmanız gerekir.
+
+
+5. OTOMATİK BAŞLATMA (İsteğe Bağlı)
+------------------------------------------------------------
+Bilgisayar açıldığında Jarvis Remote'un otomatik çalışmasını
+istiyorsanız, web arayüzünde "Kontrol" sekmesinden
+"Otomatik Başlatma Kur" butonuna basın.
+
+
+6. HIZLI KURULUM (OTOMATİK)
+------------------------------------------------------------
+Tüm kurulumu otomatik yapmak isterseniz:
+
+    python setup.py
+
+Bu komut kütüphaneleri yükler ve config dosyalarını
+hazırlar. API anahtarı ve ntfy kanal adını sonradan
+main.py'yi çalıştırarak girebilirsiniz.

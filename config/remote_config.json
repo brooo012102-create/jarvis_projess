@@ -1,0 +1,10 @@
+{
+    "ntfy_topic": "beray",
+    "ntfy_server": "https://ntfy.sh",
+    "trusted_mac": "fe:84:34:6f:d8:10",
+    "mac_scan_interval": 60,
+    "server_port": 8765,
+    "screen_fps": 15,
+    "screen_quality": 50,
+    "screen_scale": 0.5
+}

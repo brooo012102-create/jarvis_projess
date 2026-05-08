@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#030a12">
+    <meta name="description" content="Jarvis Uzaktan Kontrol Paneli — Güvenli Giriş">
+    <title>Jarvis — Giriş</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🤖</text></svg>">
+</head>
+<body>
+    <div class="app-container">
+
+        <!-- Header -->
+        <header class="header">
+            <div class="header-brand">
+                <div class="header-logo">🤖</div>
+                <div>
+                    <div class="header-title">Jarvis</div>
+                    <div class="header-subtitle">UZAKTAN KONTROL v1.0</div>
+                </div>
+            </div>
+            <div class="header-status">
+                <span class="status-dot"></span>
+                <span>ÇEVRİMİÇİ</span>
+            </div>
+        </header>
+
+        <!-- Login -->
+        <main class="login-wrapper">
+            <div class="login-card">
+
+                <!-- Step Indicator -->
+                <div class="steps">
+                    <div class="step-dot active" id="step1-dot"></div>
+                    <div class="step-dot" id="step2-dot"></div>
+                    <div class="step-dot" id="step3-dot"></div>
+                </div>
+
+                <!-- Alert -->
+                <div class="alert" id="alert"></div>
+
+                <!-- Phase 1: Token -->
+                <div id="phase-token">
+                    <div class="login-icon">🔑</div>
+                    <h1 class="login-title">Güvenli Giriş</h1>
+                    <p class="login-desc">
+                        Devam etmek için telefonunuza gönderilen<br>
+                        oturum anahtarını girin.
+                    </p>
+                    <div class="form-group">
+                        <label class="form-label" for="input-token">Oturum Anahtarı</label>
+                        <input
+                            type="text"
+                            id="input-token"
+                            class="form-input"
+                            placeholder="Anahtarı buraya yapıştırın"
+                            autocomplete="off"
+                            spellcheck="false"
+                            autofocus
+                        >
+                    </div>
+                    <button class="btn btn-primary" id="btn-token" onclick="submitToken()">
+                        Doğrula
+                    </button>
+                </div>
+
+                <!-- Phase 2: OTP -->
+                <div id="phase-otp" class="hidden">
+                    <div class="login-icon">🔐</div>
+                    <h1 class="login-title">Doğrulama Kodu</h1>
+                    <p class="login-desc">
+                        Telefonunuza 6 haneli bir doğrulama kodu gönderildi.<br>
+                        Kod 2 dakika içinde geçerlidir.
+                    </p>
+                    <div class="form-group">
+                        <label class="form-label" for="input-otp">OTP Kodu</label>
+                        <input
+                            type="text"
+                            id="input-otp"
+                            class="form-input otp-input"
+                            placeholder="● ● ● ● ● ●"
+                            maxlength="6"
+                            inputmode="numeric"
+                            pattern="[0-9]*"
+                            autocomplete="one-time-code"
+                        >
+                    </div>
+                    <button class="btn btn-primary" id="btn-otp" onclick="submitOTP()">
+                        Giriş Yap
+                    </button>
+                    <p class="text-center mt-4" style="font-size: 12px; color: var(--text-dim);">
+                        ⏱️ Kalan süre: <span id="otp-timer" style="color: var(--yellow); font-family: var(--mono);">2:00</span>
+                    </p>
+                </div>
+
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            JARVIS REMOTE CONTROL SYSTEM • v1.0
+        </footer>
+
+    </div>
+
+    <script>
+    /* ═══════════════════════════════════════════════════════════
+       Login Flow Controller
+       ═══════════════════════════════════════════════════════════ */
+
+    const $ = id => document.getElementById(id);
+
+    // ─── Alert Helper ──────────────────────────────────────────
+    function showAlert(msg, type = 'error') {
+        const el = $('alert');
+        el.textContent = msg;
+        el.className = `alert show alert-${type}`;
+        if (type !== 'error') {
+            setTimeout(() => el.classList.remove('show'), 4000);
+        }
+    }
+
+    function hideAlert() {
+        $('alert').classList.remove('show');
+    }
+
+    // ─── Phase 1: Token ────────────────────────────────────────
+    async function submitToken() {
+        const token = $('input-token').value.trim();
+        if (!token) {
+            showAlert('Lütfen oturum anahtarını girin.');
+            return;
+        }
+
+        const btn = $('btn-token');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner"></span>Doğrulanıyor…';
+        hideAlert();
+
+        try {
+            const resp = await fetch('/api/auth/token', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ token }),
+            });
+            const data = await resp.json();
+
+            if (data.success) {
+                showAlert('Doğrulama kodu gönderildi!', 'success');
+                setTimeout(() => {
+                    $('phase-token').classList.add('hidden');
+                    $('phase-otp').classList.remove('hidden');
+                    $('step1-dot').classList.replace('active', 'done');
+                    $('step2-dot').classList.add('active');
+                    $('input-otp').focus();
+                    startOTPTimer();
+                }, 800);
+            } else {
+                showAlert(data.message || 'Geçersiz anahtar.');
+                btn.disabled = false;
+                btn.textContent = 'Doğrula';
+            }
+        } catch (err) {
+            showAlert('Bağlantı hatası. Tekrar deneyin.');
+            btn.disabled = false;
+            btn.textContent = 'Doğrula';
+        }
+    }
+
+    // ─── Phase 2: OTP ──────────────────────────────────────────
+    let otpInterval = null;
+
+    function startOTPTimer() {
+        let remaining = 120;
+        const timerEl = $('otp-timer');
+        otpInterval = setInterval(() => {
+            remaining--;
+            const m = Math.floor(remaining / 60);
+            const s = remaining % 60;
+            timerEl.textContent = `${m}:${s.toString().padStart(2, '0')}`;
+            if (remaining <= 30) {
+                timerEl.style.color = 'var(--red)';
+            }
+            if (remaining <= 0) {
+                clearInterval(otpInterval);
+                timerEl.textContent = 'Süre doldu!';
+                showAlert('OTP süresi doldu. Sayfayı yenileyip tekrar deneyin.');
+            }
+        }, 1000);
+    }
+
+    async function submitOTP() {
+        const otp = $('input-otp').value.trim();
+        if (!otp || otp.length !== 6) {
+            showAlert('Lütfen 6 haneli kodu girin.');
+            return;
+        }
+
+        const btn = $('btn-otp');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner"></span>Doğrulanıyor…';
+        hideAlert();
+
+        try {
+            const resp = await fetch('/api/auth/otp', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ otp }),
+            });
+            const data = await resp.json();
+
+            if (data.success) {
+                clearInterval(otpInterval);
+                $('step2-dot').classList.replace('active', 'done');
+                $('step3-dot').classList.add('done');
+                showAlert('Giriş başarılı! Yönlendiriliyorsunuz…', 'success');
+                setTimeout(() => {
+                    window.location.href = '/dashboard';
+                }, 1000);
+            } else {
+                showAlert(data.message || 'Geçersiz kod.');
+                btn.disabled = false;
+                btn.textContent = 'Giriş Yap';
+            }
+        } catch (err) {
+            showAlert('Bağlantı hatası.');
+            btn.disabled = false;
+            btn.textContent = 'Giriş Yap';
+        }
+    }
+
+    // ─── Enter Key Support ─────────────────────────────────────
+    $('input-token').addEventListener('keydown', e => {
+        if (e.key === 'Enter') submitToken();
+    });
+
+    $('input-otp').addEventListener('keydown', e => {
+        if (e.key === 'Enter') submitOTP();
+    });
+
+    // Auto-format OTP input (numbers only)
+    $('input-otp').addEventListener('input', e => {
+        e.target.value = e.target.value.replace(/\D/g, '').slice(0, 6);
+    });
+
+    // Check if already authenticated
+    (async () => {
+        try {
+            const resp = await fetch('/api/auth/status');
+            const data = await resp.json();
+            if (data.authenticated) {
+                window.location.href = '/dashboard';
+            }
+        } catch {}
+    })();
+    </script>
+</body>
+</html>

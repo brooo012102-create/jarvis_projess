@@ -1,0 +1,42 @@
+# ─── AI & Search ────────────────────
+google-genai
+google-generativeai
+duckduckgo-search
+beautifulsoup4
+
+# ─── Audio ──────────────────────────
+pyaudio
+
+# ─── Browser Automation ────────────
+playwright
+
+# ─── Computer Control ──────────────
+pyautogui
+pyperclip
+pygetwindow
+pywinauto
+comtypes
+pycaw
+
+# ─── Vision & Image ────────────────
+opencv-python
+Pillow
+mss
+numpy
+
+# ─── System & Utilities ────────────
+psutil
+requests
+send2trash
+win10toast
+python-pptx
+youtube-transcript-api
+
+# ─── Web Server (Remote Control) ───
+fastapi
+uvicorn
+websockets
+pystray
+
+# ─── Desktop UI ────────────────────
+PyQt6

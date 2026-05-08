@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#050d18">
+    <meta name="description" content="Jarvis Uzaktan Kontrol Paneli">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Jarvis — Kontrol Paneli</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🤖</text></svg>">
+</head>
+<body>
+    <div class="app-container">
+
+        <!-- Header -->
+        <header class="header">
+            <div class="header-brand">
+                <div class="header-logo">
+                    <div class="header-logo-ring"></div>
+                    J
+                </div>
+                <div>
+                    <div class="header-title">JARVIS</div>
+                    <div class="header-subtitle">MARK XXXIX • UZAKTAN KONTROL</div>
+                </div>
+            </div>
+            <div class="header-status">
+                <span class="status-dot" id="conn-dot"></span>
+                <span id="conn-text">BAĞLI</span>
+            </div>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <nav class="nav-tabs" id="nav-tabs">
+            <button class="nav-tab active" data-tab="tab-home" onclick="switchTab(this)">
+                <span class="nav-tab-icon">📊</span>
+                <span>Durum</span>
+            </button>
+            <button class="nav-tab" data-tab="tab-screen" onclick="switchTab(this)">
+                <span class="nav-tab-icon">🖥️</span>
+                <span>Ekran</span>
+            </button>
+            <button class="nav-tab" data-tab="tab-audio" onclick="switchTab(this)">
+                <span class="nav-tab-icon">🔊</span>
+                <span>Ses</span>
+            </button>
+            <button class="nav-tab" data-tab="tab-terminal" onclick="switchTab(this)">
+                <span class="nav-tab-icon">💬</span>
+                <span>Terminal</span>
+            </button>
+            <button class="nav-tab" data-tab="tab-controls" onclick="switchTab(this)">
+                <span class="nav-tab-icon">⚡</span>
+                <span>Kontrol</span>
+            </button>
+        </nav>
+
+        <!-- Dashboard Content -->
+        <main class="dashboard">
+
+            <!-- TAB: Home / System Stats -->
+            <section class="tab-content active" id="tab-home">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <span class="card-title-icon">📊</span>
+                            Sistem Durumu
+                        </div>
+                        <div class="card-badge" id="uptime-badge">--</div>
+                    </div>
+                    <div class="card-body">
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <div class="stat-ring">
+                                    <svg viewBox="0 0 36 36">
+                                        <path class="stat-ring-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                                        <path class="stat-ring-fill" id="ring-cpu-fill" stroke-dasharray="0, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                                    </svg>
+                                    <div class="stat-ring-value" id="stat-cpu">--%</div>
+                                </div>
+                                <div class="stat-label">İşlemci</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-ring">
+                                    <svg viewBox="0 0 36 36">
+                                        <path class="stat-ring-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                                        <path class="stat-ring-fill" id="ring-mem-fill" stroke-dasharray="0, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                                    </svg>
+                                    <div class="stat-ring-value" id="stat-mem">--%</div>
+                                </div>
+                                <div class="stat-label">Bellek</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-ring">
+                                    <svg viewBox="0 0 36 36">
+                                        <path class="stat-ring-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                                        <path class="stat-ring-fill stat-ring-cyan" id="ring-vol-fill" stroke-dasharray="0, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                                    </svg>
+                                    <div class="stat-ring-value" id="stat-vol">--%</div>
+                                </div>
+                                <div class="stat-label">Ses</div>
+                            </div>
+                            <div class="stat-item stat-tunnel-item">
+                                <div class="stat-tunnel-icon">🌐</div>
+                                <div class="stat-tunnel-url" id="stat-tunnel" title="">Bekleniyor…</div>
+                                <div class="stat-label">Tünel</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions on Home -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <span class="card-title-icon">⚡</span>
+                            Hızlı İşlemler
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="quick-grid">
+                            <button class="quick-btn" onclick="launchDesktopUI()">
+                                <span class="quick-btn-icon">🖥️</span>
+                                <span>Masaüstü UI</span>
+                            </button>
+                            <button class="quick-btn" onclick="toggleMute()">
+                                <span class="quick-btn-icon" id="quick-mute-icon">🔇</span>
+                                <span id="quick-mute-text">Sessiz</span>
+                            </button>
+                            <button class="quick-btn" onclick="switchTab(document.querySelector('[data-tab=tab-screen]'))">
+                                <span class="quick-btn-icon">📺</span>
+                                <span>Canlı Ekran</span>
+                            </button>
+                            <button class="quick-btn" onclick="switchTab(document.querySelector('[data-tab=tab-terminal]'))">
+                                <span class="quick-btn-icon">💬</span>
+                                <span>Terminal</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB: Screen Stream -->
+            <section class="tab-content" id="tab-screen">
+                <div class="card card-screen">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <span class="card-title-icon">🖥️</span>
+                            Canlı Ekran
+                        </div>
+                        <div class="card-badge card-badge-live" id="stream-status">CANLI</div>
+                    </div>
+                    <div class="card-body card-body-stream">
+                        <div class="stream-container" id="stream-box">
+                            <img class="stream-img" id="stream-img" alt="Ekran akışı">
+                            <div class="stream-placeholder" id="stream-placeholder">
+                                <div class="stream-loader"></div>
+                                <div>Ekran akışı başlatılıyor…</div>
+                            </div>
+                            <div class="stream-overlay">
+                                <span class="stream-fps" id="stream-fps-label">-- FPS</span>
+                                <button class="stream-btn" onclick="toggleStream()" title="Duraklat/Başlat">
+                                    <span id="stream-toggle-icon">⏸</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB: Volume -->
+            <section class="tab-content" id="tab-audio">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <span class="card-title-icon">🔊</span>
+                            Ses Kontrolü
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="volume-section">
+                            <div class="volume-display">
+                                <span class="volume-value" id="vol-display">50</span>
+                                <span class="volume-percent">%</span>
+                            </div>
+                            <div class="volume-slider-wrap">
+                                <span class="volume-slider-label">🔈</span>
+                                <input type="range" class="volume-slider" id="vol-slider"
+                                    min="0" max="100" value="50"
+                                    oninput="onVolumeSlide(this.value)"
+                                    onchange="onVolumeSet(this.value)">
+                                <span class="volume-slider-label">🔊</span>
+                            </div>
+                            <div class="volume-actions">
+                                <button class="btn-icon" id="btn-mute" onclick="toggleMute()">🔇 Sessiz</button>
+                                <button class="btn-icon" onclick="setVolumeQuick(25)">25%</button>
+                                <button class="btn-icon" onclick="setVolumeQuick(50)">50%</button>
+                                <button class="btn-icon" onclick="setVolumeQuick(75)">75%</button>
+                                <button class="btn-icon" onclick="setVolumeQuick(100)">100%</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB: Terminal -->
+            <section class="tab-content" id="tab-terminal">
+                <div class="card card-terminal">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <span class="card-title-icon">💬</span>
+                            Jarvis Terminal
+                        </div>
+                        <button class="btn-clear" onclick="clearTerminal()" title="Geçmişi Temizle">🗑️</button>
+                    </div>
+                    <div class="card-body" style="padding:0;">
+                        <div class="terminal-container">
+                            <div class="terminal-history" id="terminal-history">
+                                <div class="chat-msg chat-jarvis chat-welcome">
+                                    <div class="chat-sender">🤖 Jarvis</div>
+                                    <div class="chat-text">Merhaba efendim! Size nasıl yardımcı olabilirim?</div>
+                                </div>
+                            </div>
+                            <div class="terminal-input-wrap">
+                                <input type="text" id="terminal-input" class="terminal-input"
+                                    placeholder="Jarvis'e bir komut yaz..."
+                                    onkeydown="if(event.key === 'Enter') sendTerminalMessage()"
+                                    autocomplete="off">
+                                <button class="terminal-send-btn" id="btn-send-msg" onclick="sendTerminalMessage()">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <line x1="22" y1="2" x2="11" y2="13"></line>
+                                        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB: System Controls -->
+            <section class="tab-content" id="tab-controls">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <span class="card-title-icon">🖥️</span>
+                            Masaüstü
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <button class="btn btn-primary" id="btn-launch-ui" onclick="launchDesktopUI()">
+                            🖥️ Masaüstü Arayüzünü Başlat
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <span class="card-title-icon">🚨</span>
+                            Acil Güvenlik
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <button id="btn-emergency-lock" class="btn btn-danger" onclick="toggleEmergencyLock()">
+                            🚨 ACİL KİLİT
+                        </button>
+                        <div id="emergency-password-display" class="emergency-info" style="display:none;">
+                            PC Kilitlendi! Şifre: <strong id="emergency-password">---</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <span class="card-title-icon">🔄</span>
+                            Otomatik Başlatma
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="controls-row">
+                            <button class="btn-icon" onclick="installAutostart()">🔄 Kur</button>
+                            <button class="btn-icon" onclick="uninstallAutostart()">❌ Kaldır</button>
+                        </div>
+                        <div class="autostart-status" id="autostart-status">Durum kontrol ediliyor...</div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            JARVIS MARK XXXIX • UZAKTAN KONTROL SİSTEMİ
+        </footer>
+
+    </div>
+
+    <!-- Toast container -->
+    <div id="toast-container"></div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
